@@ -7,6 +7,20 @@ where I try to train a fully connected neural network (NN) to transform samples
 drawn from a uniform distribution into "realistic" samples from a normal distribution.
 The generator network is the same for the naive approach and the adversarial one.
 
+### Usage
+The naive and adversarial train/generate respective processes are in separate Python
+scripts named `naive.py` and `adversarial.py` respectively.
+
+To train and save a generative model use:  
+`python naive.py --model-path=</path/to/outout/file> NUMBER_OF_SAMPLES_PER_EPOCH train`  
+or
+`python adversarial.py --model-path=</path/to/outout/file> NUMBER_OF_SAMPLES_PER_EPOCH train`
+
+To train and save a generative model use:  
+`python naive.py --model-path=</path/to/saved/model> NUMBER_OF_GENERATED_SAMPLES generate`  
+or
+`python adversarial.py --model-path=</path/to/saved/model> NUMBER_OF_GENERATED_SAMPLES generate`  
+
 ## Traget distribution
 The target distribution is a normal with mean 0 and variance 1.
 The samples can be drawn once in the entire train process and then "re-used" or
