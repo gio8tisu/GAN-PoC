@@ -7,18 +7,27 @@ import datasets
 
 
 def get_datasets_and_generator(args, no_target=False):
+    """Return random variable dataloaders and generator NN.
+
+    A dataloader is used to iterate through the latent space and
+    the target distribution. The latent space dataloader is a
+    uniform distribution sampler and the target dataloader is a
+    normal distribution sampler.
+    If no_target is True, just return the latent space dataloader.
+    """
     # Define datasets.
     uniform_dataset = datasets.UniformRVDataset(args.num_samples, args.shape)
     uniform_dataloader = torch.utils.data.DataLoader(uniform_dataset, batch_size=args.batch_size)
     # Define generator model (simple fully-connected with ReLUs).
     generator = torch.nn.Sequential(
         torch.nn.Linear(args.shape, 5),
-        torch.nn.ReLU(),
+        torch.nn.LeakyReLU(),
         torch.nn.Linear(5, 5),
-        torch.nn.ReLU(),
+        torch.nn.LeakyReLU(),
         torch.nn.Linear(5, 5),
-        torch.nn.ReLU(),
-        torch.nn.Linear(5, args.shape)
+        torch.nn.LeakyReLU(),
+        torch.nn.Linear(5, args.shape),
+        torch.nn.Tanh()
     )
     if no_target:
         return uniform_dataloader, generator
@@ -47,6 +56,7 @@ def parse_cli(parser, train_func, generate_func):
 
 
 def generate(args):
+    """Print samples using saved generator NN."""
     # Define latent space dataset and generator model.
     uniform_dataloader, generator = get_datasets_and_generator(args, no_target=True)
     # generator.to(device)

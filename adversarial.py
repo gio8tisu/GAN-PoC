@@ -10,14 +10,15 @@ from utils import get_datasets_and_generator, parse_cli, generate
 def train(args):
     # Define datasets and generator model.
     uniform_dataloader, normal_dataloader, generator = get_datasets_and_generator(args)
-    # Define discriminator model (simple fully-connected with ReLUs).
+    generator = generator.to(device)
+    # Define discriminator model (simple fully-connected with LeakyReLUs).
     discriminator = torch.nn.Sequential(
         torch.nn.Linear(args.shape, 5),
-        torch.nn.ReLU(),
+        torch.nn.LeakyReLU(),
         torch.nn.Linear(5, 5),
-        torch.nn.ReLU(),
+        torch.nn.LeakyReLU(),
         torch.nn.Linear(5, 5),
-        torch.nn.ReLU(),
+        torch.nn.LeakyReLU(),
         torch.nn.Linear(5, 1),
         torch.nn.Sigmoid()
     ).to(device)
