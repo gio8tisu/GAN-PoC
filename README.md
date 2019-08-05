@@ -34,8 +34,8 @@ It has a number of fully connected layers with ReLU activations.
 The naive approach takes the input (a sample from the uniform distribution),
 passes it through the generator NN and compares this output with the target
 (a sample from the normal distribution) using the mean square error (MSE) metric.
-A succesfully trained model using this method will generate samples around the
-target distribution's mean value. (?)
+A model trained using this method will tend to generate samples around the
+target distribution's mean value.
 
 ## Adversarial approach
 The adversarial approach is similar to the naive one, but uses a discriminator NN
