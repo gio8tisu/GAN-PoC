@@ -16,7 +16,7 @@ To train and save a generative model use:
 or:  
 `python adversarial.py --model-path=</path/to/outout/file> NUMBER_OF_SAMPLES_PER_EPOCH train`
 
-To train and save a generative model use:  
+To generate samples using a trained generative model use:  
 `python naive.py --model-path=</path/to/saved/model> NUMBER_OF_GENERATED_SAMPLES generate`  
 or:  
 `python adversarial.py --model-path=</path/to/saved/model> NUMBER_OF_GENERATED_SAMPLES generate`  
