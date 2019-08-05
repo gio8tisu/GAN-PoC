@@ -61,8 +61,9 @@ def generate(args):
     uniform_dataloader, generator = get_datasets_and_generator(args, no_target=True)
     # generator.to(device)
 
-    generator.load_state_dict(torch.load(args.model_path))
-    for input_ in uniform_dataloader:
-        # Model forward pass.
-        output = generator(input_.float())
-        print(output.item())
+    with torch.no_grad():
+        generator.load_state_dict(torch.load(args.model_path))
+        for input_ in uniform_dataloader:
+            # Model forward pass.
+            output = generator(input_.float())
+            print(output.item())
