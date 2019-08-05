@@ -2,8 +2,8 @@
 Throgh this experiment I pretend to show how a naive aproach to mimic a
 normal distribution fails, while on the other hand, an adversatial training succeeds.
 
-This is a useless experiment ment to ilustrate the adversarial training set-up 
-where I try to train a fully connected neural network (NN) to transform samples
+This is a (useless) proof of concept experiment ment to ilustrate the adversarial training
+set-up where I try to train a fully connected neural network (NN) to transform samples
 drawn from a uniform distribution into "realistic" samples from a normal distribution.
 The generator network is the same for the naive approach and the adversarial one.
 
