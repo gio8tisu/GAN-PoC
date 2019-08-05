@@ -13,12 +13,12 @@ scripts named `naive.py` and `adversarial.py` respectively.
 
 To train and save a generative model use:  
 `python naive.py --model-path=</path/to/outout/file> NUMBER_OF_SAMPLES_PER_EPOCH train`  
-or
+or:  
 `python adversarial.py --model-path=</path/to/outout/file> NUMBER_OF_SAMPLES_PER_EPOCH train`
 
 To train and save a generative model use:  
 `python naive.py --model-path=</path/to/saved/model> NUMBER_OF_GENERATED_SAMPLES generate`  
-or
+or:  
 `python adversarial.py --model-path=</path/to/saved/model> NUMBER_OF_GENERATED_SAMPLES generate`  
 
 ## Traget distribution
