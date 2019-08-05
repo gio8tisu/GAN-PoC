@@ -6,12 +6,10 @@ import torch.utils.data
 import datasets
 
 
-def get_datasets_and_generator(args):
+def get_datasets_and_generator(args, no_target=False):
     # Define datasets.
     uniform_dataset = datasets.UniformRVDataset(args.num_samples, args.shape)
-    uniform_dataloader = torch.utils.data.DataLoader(uniform_dataset)
-    normal_dataset = datasets.NormalRVDataset(args.num_samples, args.shape)
-    normal_dataloader = torch.utils.data.DataLoader(normal_dataset)
+    uniform_dataloader = torch.utils.data.DataLoader(uniform_dataset, batch_size=args.batch_size)
     # Define generator model (simple fully-connected with ReLUs).
     generator = torch.nn.Sequential(
         torch.nn.Linear(args.shape, 5),
@@ -22,16 +20,24 @@ def get_datasets_and_generator(args):
         torch.nn.ReLU(),
         torch.nn.Linear(5, args.shape)
     )
-    return uniform_dataloader, normal_dataloader, generator
+    if no_target:
+        return uniform_dataloader, generator
+    else:
+        normal_dataset = datasets.NormalRVDataset(args.num_samples, args.shape,
+                                                  static_sample=args.static_sample)
+        normal_dataloader = torch.utils.data.DataLoader(normal_dataset, batch_size=args.batch_size)
+        return uniform_dataloader, normal_dataloader, generator
 
 
 def parse_cli(parser, train_func, generate_func):
     parser.add_argument('num_samples', type=int)
     parser.add_argument('--model-path', required=True)
     parser.add_argument('--shape', default=1, type=int)
+    parser.add_argument('--batch-size', default=1, type=int)
     subparsers = parser.add_subparsers()
     train_parser = subparsers.add_parser('train')
     train_parser.add_argument('--epochs', default=5, type=int)
+    train_parser.add_argument('--static-sample', action='store_true')
     train_parser.add_argument('--learning-rate', default=1E-3, type=float)
     train_parser.set_defaults(func=train_func)
     generate_parser = subparsers.add_parser('generate')
@@ -40,3 +46,13 @@ def parse_cli(parser, train_func, generate_func):
     return args
 
 
+def generate(args):
+    # Define latent space dataset and generator model.
+    uniform_dataloader, generator = get_datasets_and_generator(args, no_target=True)
+    # generator.to(device)
+
+    generator.load_state_dict(torch.load(args.model_path))
+    for input_ in uniform_dataloader:
+        # Model forward pass.
+        output = generator(input_.float())
+        print(output.item())

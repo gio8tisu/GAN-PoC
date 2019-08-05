@@ -4,10 +4,14 @@ import torch.nn
 import torch.utils.data
 import torch.optim
 
-from utils import get_datasets_and_generator, parse_cli
+from utils import get_datasets_and_generator, parse_cli, generate
 
 
 def train(args):
+    # Define datasets and generator model.
+    uniform_dataloader, normal_dataloader, generator = get_datasets_and_generator(args)
+    generator = generator.to(device)
+
     # Define loss criterion (MSE).
     criterion = torch.nn.MSELoss()
 
@@ -32,14 +36,6 @@ def train(args):
     torch.save(generator.state_dict(), args.model_path)
 
 
-def generate(args):
-    generator.load_state_dict(torch.load(args.model_path))
-    for input_ in uniform_dataloader:
-        # Model forward pass.
-        output = generator(input_.float())
-        print(output.item())
-
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Traing generator model '
                                                  'or generate samples.')
@@ -47,10 +43,6 @@ if __name__ == '__main__':
 
     cuda = torch.cuda.is_available()
     device = 'cuda:0' if cuda else 'cpu'
-
-    # Define datasets and generator model.
-    uniform_dataloader, normal_dataloader, generator = get_datasets_and_generator(args)
-    generator = generator.to(device)
 
     # Call appropriate function (train or generate).
     args.func(args)

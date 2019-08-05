@@ -4,10 +4,24 @@ import torch.nn
 import torch.utils.data
 import torch.optim
 
-from utils import get_datasets_and_generator, parse_cli
+from utils import get_datasets_and_generator, parse_cli, generate
 
 
 def train(args):
+    # Define datasets and generator model.
+    uniform_dataloader, normal_dataloader, generator = get_datasets_and_generator(args)
+    # Define discriminator model (simple fully-connected with ReLUs).
+    discriminator = torch.nn.Sequential(
+        torch.nn.Linear(args.shape, 5),
+        torch.nn.ReLU(),
+        torch.nn.Linear(5, 5),
+        torch.nn.ReLU(),
+        torch.nn.Linear(5, 5),
+        torch.nn.ReLU(),
+        torch.nn.Linear(5, 1),
+        torch.nn.Sigmoid()
+    ).to(device)
+
     # Define loss criterion (binary cross-entropy).
     criterion = torch.nn.BCELoss()
     # Define optimizer for generator and discriminator (Adam).
@@ -71,14 +85,6 @@ def train(args):
     torch.save(generator.state_dict(), args.model_path)
 
 
-def generate(args):
-    generator.load_state_dict(torch.load(args.model_path))
-    for input_ in uniform_dataloader:
-        # Model forward pass.
-        output = generator(input_.float())
-        print(output.item())
-
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train generator with adversarial training '
                                                  'or generate samples')
@@ -86,22 +92,6 @@ if __name__ == '__main__':
 
     cuda = torch.cuda.is_available()
     device = 'cuda:0' if cuda else 'cpu'
-
-    # Define datasets and generator model.
-    uniform_dataloader, normal_dataloader, generator = get_datasets_and_generator(args)
-    generator.to(device)
-
-    # Define discriminator model (simple fully-connected with ReLUs).
-    discriminator = torch.nn.Sequential(
-        torch.nn.Linear(args.shape, 5),
-        torch.nn.ReLU(),
-        torch.nn.Linear(5, 5),
-        torch.nn.ReLU(),
-        torch.nn.Linear(5, 5),
-        torch.nn.ReLU(),
-        torch.nn.Linear(5, 1),
-        torch.nn.Sigmoid()
-    ).to(device)
 
     # Call appropriate function (train or generate).
     args.func(args)
