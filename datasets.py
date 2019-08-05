@@ -23,7 +23,7 @@ class RVDataset(torch.utils.data.Dataset, metaclass=abc.ABCMeta):
 class UniformRVDataset(RVDataset):
     """Uniform Random Variable Dataset."""
     def __getitem__(self, item):
-        return np.random.uniform(size=self.shape)
+        return np.random.uniform(-0.5, 0.5, size=self.shape)
 
 
 class NormalRVDataset(RVDataset):
