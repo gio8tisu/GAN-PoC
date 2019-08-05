@@ -4,7 +4,7 @@ import torch.nn
 import torch.utils.data
 import torch.optim
 
-import datasets
+from utils import get_datasets_and_generator, parse_cli
 
 
 def train(args):
@@ -43,36 +43,14 @@ def generate(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Traing generator model '
                                                  'or generate samples.')
-    parser.add_argument('num_samples', type=int)
-    parser.add_argument('--model-path', required=True)
-    parser.add_argument('--shape', default=1, type=int)
-    subparsers = parser.add_subparsers()
-    train_parser = subparsers.add_parser('train')
-    train_parser.add_argument('--epochs', default=5, type=int)
-    train_parser.set_defaults(func=train)
-    generate_parser = subparsers.add_parser('generate')
-    generate_parser.set_defaults(func=generate)
-    args = parser.parse_args()
+    args = parse_cli(parser, train_func=train, generate_func=generate)
 
     cuda = torch.cuda.is_available()
     device = 'cuda:0' if cuda else 'cpu'
 
-    # Define datasets.
-    uniform_dataset = datasets.UniformRVDataset(args.num_samples, args.shape)
-    uniform_dataloader = torch.utils.data.DataLoader(uniform_dataset)
-    normal_dataset = datasets.NormalRVDataset(args.num_samples, args.shape)
-    normal_dataloader = torch.utils.data.DataLoader(normal_dataset)
+    # Define datasets and generator model.
+    uniform_dataloader, normal_dataloader, generator = get_datasets_and_generator(args)
+    generator = generator.to(device)
 
-    # Define model (simple fully-connected with ReLUs).
-    generator = torch.nn.Sequential(
-        torch.nn.Linear(args.shape, 5),
-        torch.nn.ReLU(),
-        torch.nn.Linear(5, 5),
-        torch.nn.ReLU(),
-        torch.nn.Linear(5, 5),
-        torch.nn.ReLU(),
-        torch.nn.Linear(5, args.shape)
-    ).to(device)
-
-    # Call appropriate function.
+    # Call appropriate function (train or generate).
     args.func(args)
