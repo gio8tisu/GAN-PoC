@@ -1,10 +1,18 @@
 import argparse
+import os.path
 
+import numpy as np
 import torch.nn
 import torch.utils.data
 import torch.optim
+import wandb
+import tqdm
 
 from utils import get_datasets_and_generator, parse_cli, generate
+
+
+np.random.seed(0)
+torch.manual_seed(0)
 
 
 def train(args):
@@ -13,7 +21,7 @@ def train(args):
     generator = generator.to(device)
     # Define discriminator model (simple fully-connected with LeakyReLUs).
     discriminator = torch.nn.Sequential(
-        torch.nn.Linear(args.shape, 5),
+        torch.nn.Linear(args.out_shape, 5),
         torch.nn.LeakyReLU(),
         torch.nn.Linear(5, 5),
         torch.nn.LeakyReLU(),
@@ -23,23 +31,34 @@ def train(args):
         torch.nn.Sigmoid()
     ).to(device)
 
+    # Weights and Biases (wandb) stuff.
+    wandb.init(project='gan_poc')
+    wandb.config.update({'epochs': args.epochs,
+                         'batch_size': args.batch_size,
+                         'learning_rate': args.learning_rate,
+                         'input_shape': args.in_shape,
+                         'output_shape': args.out_shape,
+                         })
+    wandb.watch((generator, discriminator))
+
     # Define loss criterion (binary cross-entropy).
     criterion = torch.nn.BCELoss()
     # Define optimizer for generator and discriminator (Adam).
     optimizerG = torch.optim.Adam(generator.parameters(), lr=args.learning_rate)
     optimizerD = torch.optim.Adam(discriminator.parameters(), lr=args.learning_rate)
 
-    real_label = 1
+    real_label = 0.9
     fake_label = 0
     for epoch in range(args.epochs):
         print('Epoch:', epoch)
-        for input_, target in zip(uniform_dataloader, normal_dataloader):
+        progress_bar = tqdm.tqdm(zip(uniform_dataloader, normal_dataloader),
+                                 total=len(uniform_dataloader))
+        for input_, target in progress_bar:
             input_, target = input_.float().to(device), target.float().to(device)
             # Train discriminator with real batch
             optimizerD.zero_grad()
             # Format batch
-            # label = torch.full((input_.size(0),), real_label, device=device)
-            label = torch.full_like(input_[:, 0], real_label, device=device)
+            label = torch.full_like(target[:, 0, 0], real_label, device=device)
             # Forward pass real batch through D
             output = discriminator(target).view(-1)
             # Calculate loss on all-real batch
@@ -67,7 +86,7 @@ def train(args):
             ############################
             # (2) Update G network: maximize log(D(G(z)))
             ###########################
-            generator.zero_grad()
+            optimizerG.zero_grad()
             label.fill_(real_label)  # fake labels are real for generator cost
             # Since we just updated D, perform another forward pass of all-fake batch through D
             output = discriminator(fake).view(-1)
@@ -79,17 +98,21 @@ def train(args):
             # Update G
             optimizerG.step()
 
-            print('Discriminator loss:', errD.item())
-            print('Generator loss:', errG.item())
+            progress = {'Discriminator loss': errD.item(), 'Generator loss': errG.item()}
+            progress_bar.set_postfix(progress)
+            wandb.log(progress)
 
     print('Saving model.')
     torch.save(generator.state_dict(), args.model_path)
+    torch.save(generator.state_dict(), os.path.join(wandb.run.dir, 'model.pt'))
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train generator with adversarial training '
                                                  'or generate samples')
     args = parse_cli(parser, train_func=train, generate_func=generate)
+
+    torch.manual_seed(0)
 
     cuda = torch.cuda.is_available()
     device = 'cuda:0' if cuda else 'cpu'

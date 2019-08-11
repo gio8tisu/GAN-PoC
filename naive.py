@@ -1,10 +1,15 @@
 import argparse
 
+import numpy as np
 import torch.nn
 import torch.utils.data
 import torch.optim
 
 from utils import get_datasets_and_generator, parse_cli, generate
+
+
+np.random.seed(0)
+torch.manual_seed(0)
 
 
 def train(args):

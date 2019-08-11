@@ -16,23 +16,24 @@ def get_datasets_and_generator(args, no_target=False):
     If no_target is True, just return the latent space dataloader.
     """
     # Define datasets.
-    uniform_dataset = datasets.UniformRVDataset(args.num_samples, args.shape)
+    uniform_dataset = datasets.UniformRVDataset(args.num_samples, args.in_shape)
     uniform_dataloader = torch.utils.data.DataLoader(uniform_dataset, batch_size=args.batch_size)
     # Define generator model (simple fully-connected with ReLUs).
     generator = torch.nn.Sequential(
-        torch.nn.Linear(args.shape, 5),
+        torch.nn.Linear(args.in_shape, 5),
         torch.nn.LeakyReLU(),
         torch.nn.Linear(5, 5),
         torch.nn.LeakyReLU(),
         torch.nn.Linear(5, 5),
         torch.nn.LeakyReLU(),
-        torch.nn.Linear(5, args.shape),
-        torch.nn.Tanh()
+        torch.nn.Linear(5, args.out_shape),
+        # torch.nn.Tanh()
     )
     if no_target:
         return uniform_dataloader, generator
     else:
-        normal_dataset = datasets.NormalRVDataset(args.num_samples, args.shape,
+        normal_dataset = datasets.NormalRVDataset(args.num_samples,
+                                                  args.out_shape,
                                                   static_sample=args.static_sample)
         normal_dataloader = torch.utils.data.DataLoader(normal_dataset, batch_size=args.batch_size)
         return uniform_dataloader, normal_dataloader, generator
@@ -41,7 +42,8 @@ def get_datasets_and_generator(args, no_target=False):
 def parse_cli(parser, train_func, generate_func):
     parser.add_argument('num_samples', type=int)
     parser.add_argument('--model-path', required=True)
-    parser.add_argument('--shape', default=1, type=int)
+    parser.add_argument('--in-shape', default=1, type=int)
+    parser.add_argument('--out-shape', default=1, type=int)
     parser.add_argument('--batch-size', default=1, type=int)
     subparsers = parser.add_subparsers()
     train_parser = subparsers.add_parser('train')
@@ -66,4 +68,4 @@ def generate(args):
         for input_ in uniform_dataloader:
             # Model forward pass.
             output = generator(input_.float())
-            print(output.item())
+            print('\t'.join(map(str, output.squeeze().tolist())))

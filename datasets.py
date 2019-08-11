@@ -3,12 +3,9 @@ import abc
 import numpy as np
 import torch.utils.data
 
-np.random.seed(0)
-torch.manual_seed(0)
-
 
 class RVDataset(torch.utils.data.Dataset, metaclass=abc.ABCMeta):
-    """Random Variable Dataset metaclass."""
+    """Random Variable Dataset abstract class."""
     def __init__(self, num_samples, shape=1, static_sample=False):
         assert isinstance(shape, (int, tuple))
         if isinstance(shape, int):
@@ -36,7 +33,7 @@ class RVDataset(torch.utils.data.Dataset, metaclass=abc.ABCMeta):
 class UniformRVDataset(RVDataset):
     """Uniform Random Variable Dataset."""
     def _get_sample(self, item):
-        return np.random.uniform(-0.5, 0.5, size=self.shape)
+        return np.random.uniform(-1, 1, size=self.shape)
 
 
 class NormalRVDataset(RVDataset):
@@ -46,7 +43,7 @@ class NormalRVDataset(RVDataset):
 
 
 if __name__ == '__main__':
-    uniform = UniformRVDataset(10)
+    uniform = UniformRVDataset(10, 2)
     normal = NormalRVDataset(10)
     for s in zip(iter(uniform), iter(normal)):
         print(s)
