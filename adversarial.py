@@ -112,8 +112,6 @@ if __name__ == '__main__':
                                                  'or generate samples')
     args = parse_cli(parser, train_func=train, generate_func=generate)
 
-    torch.manual_seed(0)
-
     cuda = torch.cuda.is_available()
     device = 'cuda:0' if cuda else 'cpu'
 

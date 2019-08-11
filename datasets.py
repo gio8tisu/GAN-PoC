@@ -32,14 +32,24 @@ class RVDataset(torch.utils.data.Dataset, metaclass=abc.ABCMeta):
 
 class UniformRVDataset(RVDataset):
     """Uniform Random Variable Dataset."""
+    def __init__(self, low=-1, high=1, **kwargs):
+        super().__init__(**kwargs)
+        self.low = low
+        self.high = high
+
     def _get_sample(self, item):
-        return np.random.uniform(-1, 1, size=self.shape)
+        return np.random.uniform(self.low, self.high, size=self.shape)
 
 
 class NormalRVDataset(RVDataset):
     """Normal Random Variable Dataset."""
+    def __init__(self, mean=0, variance=0, **kwargs):
+        self.mean = mean
+        self.variance = variance
+        super().__init__(**kwargs)
+
     def _get_sample(self, item):
-        return np.random.normal(size=self.shape)
+        return np.random.normal(self.mean, self.variance, size=self.shape)
 
 
 if __name__ == '__main__':

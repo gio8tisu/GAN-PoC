@@ -16,8 +16,10 @@ def get_datasets_and_generator(args, no_target=False):
     If no_target is True, just return the latent space dataloader.
     """
     # Define datasets.
-    uniform_dataset = datasets.UniformRVDataset(args.num_samples, args.in_shape)
-    uniform_dataloader = torch.utils.data.DataLoader(uniform_dataset, batch_size=args.batch_size)
+    uniform_dataset = datasets.UniformRVDataset(num_samples=args.num_samples,
+                                                shape=args.in_shape)
+    uniform_dataloader = torch.utils.data.DataLoader(uniform_dataset,
+                                                     batch_size=args.batch_size)
     # Define generator model (simple fully-connected with ReLUs).
     generator = torch.nn.Sequential(
         torch.nn.Linear(args.in_shape, 5),
@@ -32,10 +34,11 @@ def get_datasets_and_generator(args, no_target=False):
     if no_target:
         return uniform_dataloader, generator
     else:
-        normal_dataset = datasets.NormalRVDataset(args.num_samples,
-                                                  args.out_shape,
+        normal_dataset = datasets.NormalRVDataset(num_samples=args.num_samples,
+                                                  shape=args.out_shape,
                                                   static_sample=args.static_sample)
-        normal_dataloader = torch.utils.data.DataLoader(normal_dataset, batch_size=args.batch_size)
+        normal_dataloader = torch.utils.data.DataLoader(normal_dataset,
+                                                        batch_size=args.batch_size)
         return uniform_dataloader, normal_dataloader, generator
 
 
