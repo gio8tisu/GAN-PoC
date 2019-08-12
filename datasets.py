@@ -43,7 +43,7 @@ class UniformRVDataset(RVDataset):
 
 class NormalRVDataset(RVDataset):
     """Normal Random Variable Dataset."""
-    def __init__(self, mean=0, variance=0, **kwargs):
+    def __init__(self, mean=0, variance=1, **kwargs):
         self.mean = mean
         self.variance = variance
         super().__init__(**kwargs)
