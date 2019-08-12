@@ -59,6 +59,10 @@ def train(args):
             optimizerD.zero_grad()
             # Format batch
             label = torch.full_like(target[:, 0, 0], real_label, device=device)
+
+            ############################
+            # (1) Update D network: maximize log(D(x)) + log(1 - D(G(z)))
+            ###########################
             # Forward pass real batch through D
             output = discriminator(target).view(-1)
             # Calculate loss on all-real batch
@@ -68,7 +72,7 @@ def train(args):
             D_x = output.mean().item()
 
             # Train with fake batch
-            # Generate fake image batch with G
+            # Generate fake batch with G
             fake = generator(input_)
             label.fill_(fake_label)
             # Forward pass fake batch through D
