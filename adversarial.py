@@ -45,24 +45,38 @@ def train(args):
     criterion = torch.nn.BCELoss()
     # Define optimizer for generator and discriminator (Adam).
     optimizerG = torch.optim.Adam(generator.parameters(), lr=args.learning_rate)
-    optimizerD = torch.optim.Adam(discriminator.parameters(), lr=args.learning_rate)
+    optimizerD = torch.optim.Adam(discriminator.parameters(), lr=2 * args.learning_rate)
 
-    real_label = 0.9
-    fake_label = 0
+    real_label = 1.0
+    fake_label = 0.
     for epoch in range(args.epochs):
         print('Epoch:', epoch)
         progress_bar = tqdm.tqdm(zip(uniform_dataloader, normal_dataloader),
                                  total=len(uniform_dataloader))
         for input_, target in progress_bar:
             input_, target = input_.float().to(device), target.float().to(device)
-            # Train discriminator with real batch
-            optimizerD.zero_grad()
             # Format batch
             label = torch.full_like(target[:, 0, 0], real_label, device=device)
 
             ############################
-            # (1) Update D network: maximize log(D(x)) + log(1 - D(G(z)))
+            # (1) Update G network: maximize log(D(G(z)))
             ###########################
+            optimizerG.zero_grad()
+            fake = generator(input_)  # generate fake batch.
+            # Perform a forward pass of all-fake batch through D.
+            output = discriminator(fake).view(-1)
+            # Calculate G's loss based on this output
+            errG = criterion(output, label)
+            # Calculate gradients for G
+            errG.backward()
+            D_G_z1 = output.mean().item()
+            # Update G
+            optimizerG.step()
+
+            ############################
+            # (2) Update D network: maximize log(D(x)) + log(1 - D(G(z)))
+            ###########################
+            optimizerD.zero_grad()
             # Forward pass real batch through D
             output = discriminator(target).view(-1)
             # Calculate loss on all-real batch
@@ -72,8 +86,6 @@ def train(args):
             D_x = output.mean().item()
 
             # Train with fake batch
-            # Generate fake batch with G
-            fake = generator(input_)
             label.fill_(fake_label)
             # Forward pass fake batch through D
             output = discriminator(fake.detach()).view(-1)
@@ -81,29 +93,17 @@ def train(args):
             errD_fake = criterion(output, label)
             # Calculate the gradients for this batch
             errD_fake.backward()
-            D_G_z1 = output.mean().item()
+            D_G_z2 = output.mean().item()
             # Add the gradients from the all-real and all-fake batches
-            errD = errD_real + errD_fake
+            errD = (errD_real + errD_fake) / 2
             # Update D
             optimizerD.step()
 
-            ############################
-            # (2) Update G network: maximize log(D(G(z)))
-            ###########################
-            optimizerG.zero_grad()
-            label.fill_(real_label)  # fake labels are real for generator cost
-            # Since we just updated D, perform another forward pass of all-fake batch through D
-            output = discriminator(fake).view(-1)
-            # Calculate G's loss based on this output
-            errG = criterion(output, label)
-            # Calculate gradients for G
-            errG.backward()
-            D_G_z2 = output.mean().item()
-            # Update G
-            optimizerG.step()
-
             progress = {'Discriminator loss': errD.item(), 'Generator loss': errG.item()}
             progress_bar.set_postfix(progress)
+            progress['D_x'] = D_x
+            progress['D_G_z1'] = D_G_z1
+            progress['D_G_z2'] = D_G_z2
             wandb.log(progress)
 
     print('Saving model.')
