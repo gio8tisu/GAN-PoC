@@ -2,8 +2,8 @@
 Throgh this experiment I pretend to show how a naive aproach to mimic a
 normal distribution fails, while on the other hand, an adversatial training succeeds.
 
-This is a useless experiment ment to ilustrate the adversarial training set-up 
-where I try to train a fully connected neural network (NN) to transform samples
+This is a (useless) proof of concept experiment ment to ilustrate the adversarial training
+set-up where I try to train a fully connected neural network (NN) to transform samples
 drawn from a uniform distribution into "realistic" samples from a normal distribution.
 The generator network is the same for the naive approach and the adversarial one.
 
@@ -13,12 +13,12 @@ scripts named `naive.py` and `adversarial.py` respectively.
 
 To train and save a generative model use:  
 `python naive.py --model-path=</path/to/outout/file> NUMBER_OF_SAMPLES_PER_EPOCH train`  
-or
+or:  
 `python adversarial.py --model-path=</path/to/outout/file> NUMBER_OF_SAMPLES_PER_EPOCH train`
 
-To train and save a generative model use:  
+To generate samples using a trained generative model use:  
 `python naive.py --model-path=</path/to/saved/model> NUMBER_OF_GENERATED_SAMPLES generate`  
-or
+or:  
 `python adversarial.py --model-path=</path/to/saved/model> NUMBER_OF_GENERATED_SAMPLES generate`  
 
 ## Traget distribution
@@ -34,8 +34,8 @@ It has a number of fully connected layers with ReLU activations.
 The naive approach takes the input (a sample from the uniform distribution),
 passes it through the generator NN and compares this output with the target
 (a sample from the normal distribution) using the mean square error (MSE) metric.
-A succesfully trained model using this method will generate samples around the
-target distribution's mean value. (?)
+A model trained using this method will tend to generate samples around the
+target distribution's mean value.
 
 ## Adversarial approach
 The adversarial approach is similar to the naive one, but uses a discriminator NN
