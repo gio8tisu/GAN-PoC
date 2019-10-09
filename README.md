@@ -1,4 +1,4 @@
-# Generative Adversarial Network Proof of Concept (GAN PoC)
+# Generative Adversarial Networks Proof of Concept (GANs PoC)
 Throgh this experiment I pretend to show how a naive aproach to mimic a
 normal distribution fails, while on the other hand, an adversatial training succeeds.
 
