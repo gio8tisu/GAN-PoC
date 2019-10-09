@@ -12,14 +12,14 @@ The naive and adversarial train/generate respective processes are in separate Py
 scripts named `naive.py` and `adversarial.py` respectively.
 
 To train and save a generative model use:  
-`python naive.py --model-path=</path/to/outout/file> NUMBER_OF_SAMPLES_PER_EPOCH train`  
+`python naive.py --model-path=</path/to/outout/file> <NUMBER_OF_SAMPLES_PER_EPOCH> train`  
 or:  
-`python adversarial.py --model-path=</path/to/outout/file> NUMBER_OF_SAMPLES_PER_EPOCH train`
+`python adversarial.py --model-path=</path/to/outout/file> <NUMBER_OF_SAMPLES_PER_EPOCH> train`
 
 To generate samples using a trained generative model use:  
-`python naive.py --model-path=</path/to/saved/model> NUMBER_OF_GENERATED_SAMPLES generate`  
+`python naive.py --model-path=</path/to/saved/model> <NUMBER_OF_GENERATED_SAMPLES> generate`  
 or:  
-`python adversarial.py --model-path=</path/to/saved/model> NUMBER_OF_GENERATED_SAMPLES generate`  
+`python adversarial.py --model-path=</path/to/saved/model> <NUMBER_OF_GENERATED_SAMPLES> generate`  
 
 ## Traget distribution
 The target distribution is a normal with mean 0 and variance 1.
