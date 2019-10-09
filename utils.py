@@ -36,7 +36,7 @@ def get_datasets_and_generator(args, no_target=False):
     else:
         normal_dataset = datasets.NormalRVDataset(num_samples=args.num_samples,
                                                   shape=args.out_shape,
-                                                  static_sample=args.static_sample)
+                                                  static_sample=not args.dynamic_sample)
         normal_dataloader = torch.utils.data.DataLoader(normal_dataset,
                                                         batch_size=args.batch_size)
         return uniform_dataloader, normal_dataloader, generator
@@ -51,7 +51,7 @@ def parse_cli(parser, train_func, generate_func):
     subparsers = parser.add_subparsers()
     train_parser = subparsers.add_parser('train')
     train_parser.add_argument('--epochs', default=5, type=int)
-    train_parser.add_argument('--static-sample', action='store_true')
+    train_parser.add_argument('--dynamic-sample', action='store_true')
     train_parser.add_argument('--learning-rate', default=1E-3, type=float)
     train_parser.set_defaults(func=train_func)
     generate_parser = subparsers.add_parser('generate')
@@ -71,4 +71,6 @@ def generate(args):
         for input_ in uniform_dataloader:
             # Model forward pass.
             output = generator(input_.float())
-            print('\t'.join(map(str, output.squeeze().tolist())))
+            if len(output) > 1:
+                print('\t'.join(map(str, output.squeeze().tolist())))
+            print(output.item())
