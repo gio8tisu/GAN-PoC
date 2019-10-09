@@ -40,9 +40,8 @@ target distribution's mean value.
 ## Adversarial approach
 The adversarial approach is similar to the naive one, but uses a discriminator NN
 to measure the similarity with the target distribution.
-I.e, another model is simultaniously trained to predict how probable its input
+I.e, another model is simultaniously trained to predict how likely its input
 comes from the target distribution or it has been synthesized by the generator model
-(hence, the name adversarial).
 A succesfully trained model using this method will generate diverse samples with
 a distribution similar to the target one.
 
