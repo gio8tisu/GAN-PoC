@@ -1,4 +1,4 @@
-# Generative Adversarial Network Proof of Concept (GAN PoC)
+# Generative Adversarial Networks Proof of Concept (GANs PoC)
 Throgh this experiment I pretend to show how a naive aproach to mimic a
 normal distribution fails, while on the other hand, an adversatial training succeeds.
 
@@ -12,14 +12,14 @@ The naive and adversarial train/generate respective processes are in separate Py
 scripts named `naive.py` and `adversarial.py` respectively.
 
 To train and save a generative model use:  
-`python naive.py --model-path=</path/to/outout/file> NUMBER_OF_SAMPLES_PER_EPOCH train`  
+`python naive.py --model-path=</path/to/outout/file> <NUMBER_OF_SAMPLES_PER_EPOCH> train`  
 or:  
-`python adversarial.py --model-path=</path/to/outout/file> NUMBER_OF_SAMPLES_PER_EPOCH train`
+`python adversarial.py --model-path=</path/to/outout/file> <NUMBER_OF_SAMPLES_PER_EPOCH> train`
 
 To generate samples using a trained generative model use:  
-`python naive.py --model-path=</path/to/saved/model> NUMBER_OF_GENERATED_SAMPLES generate`  
+`python naive.py --model-path=</path/to/saved/model> <NUMBER_OF_GENERATED_SAMPLES> generate`  
 or:  
-`python adversarial.py --model-path=</path/to/saved/model> NUMBER_OF_GENERATED_SAMPLES generate`  
+`python adversarial.py --model-path=</path/to/saved/model> <NUMBER_OF_GENERATED_SAMPLES> generate`  
 
 ## Traget distribution
 The target distribution is a normal with mean 0 and variance 1.
@@ -40,9 +40,8 @@ target distribution's mean value.
 ## Adversarial approach
 The adversarial approach is similar to the naive one, but uses a discriminator NN
 to measure the similarity with the target distribution.
-I.e, another model is simultaniously trained to predict how probable its input
+I.e, another model is simultaniously trained to predict how likely its input
 comes from the target distribution or it has been synthesized by the generator model
-(hence, the name adversarial).
 A succesfully trained model using this method will generate diverse samples with
 a distribution similar to the target one.
 
