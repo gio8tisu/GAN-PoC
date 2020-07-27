@@ -1,5 +1,5 @@
 # Generative Adversarial Networks Proof of Concept (GANs PoC)
-Throgh this experiment I pretend to show how a naive aproach to mimic a
+Through this experiment I pretend to show how a naive aproach to mimic a
 normal distribution fails, while on the other hand, an adversatial training succeeds.
 
 This is a (useless) proof of concept experiment ment to ilustrate the adversarial training
@@ -12,16 +12,16 @@ The naive and adversarial train/generate respective processes are in separate Py
 scripts named `naive.py` and `adversarial.py` respectively.
 
 To train and save a generative model use:  
-`python naive.py --model-path=</path/to/outout/file> <NUMBER_OF_SAMPLES_PER_EPOCH> train`  
+`python naive.py --model-path=/path/to/outout/file <NUMBER_OF_SAMPLES_PER_EPOCH> train`  
 or:  
-`python adversarial.py --model-path=</path/to/outout/file> <NUMBER_OF_SAMPLES_PER_EPOCH> train`
+`python adversarial.py --model-path=/path/to/outout/file <NUMBER_OF_SAMPLES_PER_EPOCH> train`
 
 To generate samples using a trained generative model use:  
-`python naive.py --model-path=</path/to/saved/model> <NUMBER_OF_GENERATED_SAMPLES> generate`  
+`python naive.py --model-path=/path/to/saved/model <NUMBER_OF_GENERATED_SAMPLES> generate`  
 or:  
-`python adversarial.py --model-path=</path/to/saved/model> <NUMBER_OF_GENERATED_SAMPLES> generate`  
+`python adversarial.py --model-path=/path/to/saved/model <NUMBER_OF_GENERATED_SAMPLES> generate`  
 
-## Traget distribution
+## Target distribution
 The target distribution is a normal with mean 0 and variance 1.
 The samples can be drawn once in the entire train process and then "re-used" or
 can be drawn at each iteration.
